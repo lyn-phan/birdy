@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<body class="homepage-container" id="homepage">
+    <link rel="stylesheet" href="/static/css/style.css"/>
+<div id="content" class="container internal">
+    <h1>A little birdy told me...</h1>
+    <div class="search-form" id="search-form">
+        <form action="/search" method="GET" id="search-form">
+            <label for="twitter-handle">Twitter handle:</label>
+            <input type="handle" name="handle">
+        <br>
+            <label for="keyword"> Keyword parameters: </label>
+            <input type="keyword" name="keyword">
+        <br>
+        <select name="quantity" id="quantity">
+            <option value="10">10</option>
+            <option value="20">20</option>
+            <option value="30">30</option>
+        </select>
+        <br>
+        <button type="submit">Search</button>
+
+        </form>
+    
+    </div>
+</div>
+{% endblock %}
