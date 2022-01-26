@@ -1,6 +1,6 @@
-from flask_sqlalchemy import SQLAlchemy
 from flask import Flask
-from sqlalchemy.sql import func
+from flask_sqlalchemy import SQLAlchemy
+import server
 
 db = SQLAlchemy()
 
@@ -58,13 +58,15 @@ class Scrubbed_Candidate(db.Model):
         return f'<Scrubbed_Candidate scrubbed_id={self.scrubbed_id} original_handle={self.original_handle}>'
 
 
-def connect_to_db(app):
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///birdies'
-    app.config['SQLALCHEMY_ECHO'] = True
+def connect_to_db(app, db_uri='postgresql:///birdies', echo=True):
+    app.config['SQLALCHEMY_DATABASE_URI'] = db_uri
+    app.config['SQLALCHEMY_ECHO'] = echo
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
     db.app = app
     db.init_app(app)
+
+    print('Connected to the database!')
 
 
 if __name__ == '__main__':
@@ -72,5 +74,5 @@ if __name__ == '__main__':
     from server import app
     connect_to_db(app)
 
-    db.create_all()
-    print('Connected to the database!')
+    # db.create_all()
+    # print('Connected to the database!')
