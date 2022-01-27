@@ -11,29 +11,31 @@ class User(db.Model):
     __tablename__ = 'user'
 
     user_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
-    original_handle = db.Column(
-        db.String(30), nullable=False)
+    handle = db.Column(db.String(30))
+    candidate_id = db.Column(
+        db.Integer, db.ForeignKey('candidate.candidate_id'))
 
     candidate = db.relationship('Candidate', backref='user')
 
     def __repr__(self):
-        return f'<User user_id={self.user_id} handle={self.original_handle}>'
+        return f'<User user_id={self.user_id} handle={self.handle}>'
 
 
 class Candidate(db.Model):
-    """this keeps track of the follwers of the original_handle"""
+    """this keeps track of the follwers of the handle"""
 
     __tablename__ = 'candidate'
 
     candidate_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
-    original_handle = db.Column(
-        db.String(30), db.ForeignKey('user.original_handle'), nullable=False)
-    filtered_follower = db.Column(db.String(20), nullable=False)
+    followers = db.Column(db.String(20), nullable=False)
+    scrubbed_id = db.Column(db.Integer, db.ForeignKey(
+        'scrubbed_candidate.scrubbed_id'))
 
-    user = db.relationship('user', backref='candidate')
+    scrubbed_candidate = db.relationship(
+        'Scrubbed_Candidate', backref='candidate')
 
     def __repr__(self):
-        return f'<Candidate candidate_id={self.candidate_id} handle={self.original_handle} follower={self.filtered_follower}>'
+        return f'<Candidate candidate_id={self.candidate_id} handle={self.handle} follower={self.filtered_follower}>'
 
 
 class Scrubbed_Candidate(db.Model):
@@ -43,19 +45,12 @@ class Scrubbed_Candidate(db.Model):
     __tablename__ = 'scrubbed_candidate'
 
     scrubbed_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
-    original_handle = db.Column(db.String(30), db.ForeignKey(
-        'user.original_handle'), nullable=False)
-    original_handle = db.Column(db.String(30), db.ForeignKey(
-        'candidate.original_handle'), nullable=False)
-    candidate_name = db.Column(db.String(40))
-    handle = db.Column(db.String(30), nullable=False)
+    candidate_name = db.Column(db.String(50), nullable=False)
     email = db.Column(db.String(40), nullable=True)
-
-    user = db.relationship('user', backref='scrubbed_candidate')
-    candidate = db.relationship('candidate', backref='scrubbed_candidate')
+    specialty = db.Column(db.String(50))
 
     def __repr__(self):
-        return f'<Scrubbed_Candidate scrubbed_id={self.scrubbed_id} original_handle={self.original_handle}>'
+        return f'<Scrubbed_Candidate scrubbed_id={self.scrubbed_id} handle={self.handle}>'
 
 
 def connect_to_db(app, db_uri='postgresql:///birdies', echo=True):
@@ -74,5 +69,5 @@ if __name__ == '__main__':
     from server import app
     connect_to_db(app)
 
-    # db.create_all()
+    db.create_all()
     # print('Connected to the database!')
