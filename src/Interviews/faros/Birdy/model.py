@@ -11,46 +11,43 @@ class User(db.Model):
     __tablename__ = 'user'
 
     user_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
-    handle = db.Column(db.String(30))
-    candidate_id = db.Column(
-        db.Integer, db.ForeignKey('candidate.candidate_id'))
-
-    candidate = db.relationship('Candidate', backref='user')
+    user_handle = db.Column(db.String(30), nullable=False)
 
     def __repr__(self):
-        return f'<User user_id={self.user_id} handle={self.handle}>'
+        return f'<User user_id={self.user_id} handle={self.user_handle}>'
 
 
-class Candidate(db.Model):
-    """this keeps track of the follwers of the handle"""
+class Follower(db.Model):
+    """this keeps track of the followers of the original handle"""
 
-    __tablename__ = 'candidate'
+    __tablename__ = "follower"
 
-    candidate_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
-    followers = db.Column(db.String(20), nullable=False)
-    scrubbed_id = db.Column(db.Integer, db.ForeignKey(
-        'scrubbed_candidate.scrubbed_id'))
+    id = db.Column(db.Integer, autoincrement=True, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey(
+        "user.user_id"), nullable=False)
+    following = db.Column(db.Integer, db.ForeignKey(
+        "user.user_id"), nullable=False)
 
-    scrubbed_candidate = db.relationship(
-        'Scrubbed_Candidate', backref='candidate')
-
-    def __repr__(self):
-        return f'<Candidate candidate_id={self.candidate_id} handle={self.handle} follower={self.filtered_follower}>'
-
-
-class Scrubbed_Candidate(db.Model):
-    """this is the final list after filtering the followers from candidates,
-    and we're storing contact information for each candidate"""
-
-    __tablename__ = 'scrubbed_candidate'
-
-    scrubbed_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
-    candidate_name = db.Column(db.String(50), nullable=False)
-    email = db.Column(db.String(40), nullable=True)
-    specialty = db.Column(db.String(50))
+    user = db.relationship("User", backref="followers")
 
     def __repr__(self):
-        return f'<Scrubbed_Candidate scrubbed_id={self.scrubbed_id} handle={self.handle}>'
+        return f'<Follower id={self.id} user_id={self.user_id} following={self.following}>'
+
+
+# class Tweet(db.Model):
+#     """this stores tweets that contain keyword"""
+
+#     __tablename__ = "tweet"
+
+#     id = db.Column(db.Integer, autoincrement=True, primary_key=True)
+#     tweets = db.Column(db.String(100), nullable=False)
+#     user_id = db.Column(db.Integer, db.ForeignKey(
+#         "user.user_id"), nullable=False)
+
+#     user = db.relationship('User', backref='tweets')
+
+#     def __repr__(self):
+#         return f'<Tweet id={self.id} tweets={self.tweets}, user_id={self.user_id}>'
 
 
 def connect_to_db(app, db_uri='postgresql:///birdies', echo=True):

@@ -24,6 +24,28 @@ def add_queried_followers(followers):
     print("followers added!")
 
 
+def get_followers(followers):
+    potential_candidates = Candidate.query.filter_by(followers=followers).all()
+
+    return list(potential_candidates)
+
+
+def add_keyword(keyword):
+    saved_keyword = Candidate(keyword=keyword)
+    db.session.add(saved_keyword)
+    db.session.commit()
+
+    print("keyword added!")
+    return saved_keyword
+
+
+def get_speciality(keyword):
+    keyword = Candidate.query.filter_by(keyword=keyword).all()
+
+    return keyword
+
+
+    # def s = ():
 if __name__ == '__main__':
     from server import app
     connect_to_db(app)
