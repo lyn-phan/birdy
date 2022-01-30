@@ -72,34 +72,30 @@ def ingest():
     # # add each of those users(followers) as a follower to the Follower table
     added_follower = crud.add_user_as_follower(
         user_id=user_id, following_id=following_id)
-    print("we populated the database!")
 
-    # data = {"followers": [followers], "keyword": keyword}
-    # print(data)
-
-    return redirect("/")
+    return render_template("/candidates.html", keyword=keyword, handle=handle)
     # what data needs to be returned?
     # we need the user name of our followers, along with the user ID of OH
-    #
 
-    # print(data)
 
-# @app.route("/candidates", methods=["GET", "POST"])
-# def get_relevant_candidates():
-#     data = json.loads(request.data)
-#     print(data)
+@app.route("/candidates", methods=["GET", "POST"])
+def get_relevant_candidates(keyword, handle):
 
-    # # look up user_id that corresponds with handle
-    # user_id = crud.get_userid(handle)
-    # # look up in followers table with userID, and find following IDs
-    # follower_id = crud.get_follower_id(user_id)
-    # # go back to users table and look up corresponding screen names correspoinding with Following
-    # screen_name = crud.get_username(follower_id)
+    # look up user_id that corresponds with handle
+    user_id = crud.get_userid(user_handle=handle)
+    # look up in followers table with userID, and find following IDs
+    follower_id = crud.get_follower_id(following_id=user_id)
+    # go back to users table and look up corresponding screen names correspoinding with Following
+    screen_name = crud.get_username(user_id=follower_id)
+
+    print("---------------------------")
+    print(screen_name)
 
     # run API search against all of the following_ids whose user_id = OH's ID
     # return matching screen names
 
     # grabs the list of followers and passes through user_Timeline API to exract tweets of corresponding users
+
     # for f in data():
     #     # terms = data["followers"]
     #     search_terms = keyword + "from:" + f
@@ -112,8 +108,7 @@ def ingest():
     #         else:
     #             print("Oops, there are not matches with these followers.")
 
-    # return render_template("candidates.html")
-    # followers=followers, keyword=keyword)
+    return render_template("/candidates.html")
 
 
 if __name__ == "__main__":

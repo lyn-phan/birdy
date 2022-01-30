@@ -26,7 +26,8 @@ def add_user_as_follower(user_id, following_id):
 
 def get_follower_id(userid):
     """look up following ID (who's following a given user) by giving it a user id"""
-    follower_id = Follower.query.filter_by(following_id=userid).first()
+    first_id = Follower.query.filter_by(following_id=userid).first()
+    follower_id = first_id.following_id
 
     return follower_id
 
@@ -35,8 +36,9 @@ def get_username(user_id):
     """looks up screen name by user ID"""
 
     sn = User.query.filter_by(user_id=user_id).first()
+    name = sn.user_handle
 
-    return sn
+    return name
 
 
 def get_userid(user_handle):
