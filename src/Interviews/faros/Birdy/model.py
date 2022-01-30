@@ -22,32 +22,19 @@ class Follower(db.Model):
 
     __tablename__ = "follower"
 
-    id = db.Column(db.Integer, autoincrement=True, primary_key=True)
+    f_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey(
         "user.user_id"), nullable=False)
-    following = db.Column(db.Integer, db.ForeignKey(
+    following_id = db.Column(db.Integer, db.ForeignKey(
         "user.user_id"), nullable=False)
 
-    user = db.relationship("User", backref="followers")
+    user = db.relationship("User", backref="follower",
+                           foreign_keys=[user_id])
+    follows = db.relationship(
+        "User", foreign_keys=[following_id])
 
     def __repr__(self):
-        return f'<Follower id={self.id} user_id={self.user_id} following={self.following}>'
-
-
-# class Tweet(db.Model):
-#     """this stores tweets that contain keyword"""
-
-#     __tablename__ = "tweet"
-
-#     id = db.Column(db.Integer, autoincrement=True, primary_key=True)
-#     tweets = db.Column(db.String(100), nullable=False)
-#     user_id = db.Column(db.Integer, db.ForeignKey(
-#         "user.user_id"), nullable=False)
-
-#     user = db.relationship('User', backref='tweets')
-
-#     def __repr__(self):
-#         return f'<Tweet id={self.id} tweets={self.tweets}, user_id={self.user_id}>'
+        return f'<Follower f_id={self.f_id} user_id={self.user_id} following_id={self.following_id}>'
 
 
 def connect_to_db(app, db_uri='postgresql:///birdies', echo=True):

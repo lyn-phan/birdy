@@ -19,8 +19,8 @@ def get_users(db):
 def seed_database(db):
     user1 = User(user_handle='_lyndalove')
     user2 = User(user_handle='marbeeno')
-    follower1 = Follower(user_id=1, following=2)
-    follower2 = Follower(user_id=2, following=1)
+    follower1 = Follower(user_id=1, following_id=2)
+    follower2 = Follower(user_id=2, following_id=1)
 
     db.session.add(user1)
     db.session.add(user2)

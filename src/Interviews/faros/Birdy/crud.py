@@ -4,48 +4,50 @@ from flask import Flask, session
 from model import *
 
 
-def add_user(handle):
-    """create and returns handle that we're searching with"""
+def add_user(user_handle):
+    """create and returns any user """
 
-    user = User(handle=handle)
+    user = User(user_handle=user_handle)
     db.session.add(user)
     db.session.commit()
 
     return user
 
 
-def add_queried_followers(followers):
-    """ adds original handle and it's followers based on filters"""
+def add_user_as_follower(user_id, following_id):
+    """ adds original handle and it's followers"""
 
-    user_followers = Candidate(followers=followers)
+    user_followers = Follower(user_id=user_id, following_id=following_id)
     db.session.add(user_followers)
     db.session.commit()
 
-    print("followers added!")
+    return user_followers
 
 
-def get_followers(followers):
-    potential_candidates = Candidate.query.filter_by(followers=followers).all()
+def get_follower_id(userid):
+    """look up following ID (who's following a given user) by giving it a user id"""
+    follower_id = Follower.query.filter_by(following_id=userid).first()
 
-    return list(potential_candidates)
-
-
-def add_keyword(keyword):
-    saved_keyword = Candidate(keyword=keyword)
-    db.session.add(saved_keyword)
-    db.session.commit()
-
-    print("keyword added!")
-    return saved_keyword
+    return follower_id
 
 
-def get_speciality(keyword):
-    keyword = Candidate.query.filter_by(keyword=keyword).all()
+def get_username(user_id):
+    """looks up screen name by user ID"""
 
-    return keyword
+    sn = User.query.filter_by(user_id=user_id).first()
+
+    return sn
 
 
-    # def s = ():
+def get_userid(user_handle):
+    """looks up userID by handle"""
+
+    userid = User.query.filter_by(user_handle=user_handle).first()
+    user_id = userid.user_id
+
+    return user_id
+
+
 if __name__ == '__main__':
     from server import app
     connect_to_db(app)
