@@ -59,7 +59,7 @@ def ingest():
     # <User user_id=7 handle=marvin_roque>
 
     # using the user handle, search for followers by api and adds followers to users table
-    for follower in tweepy.Cursor(api.get_followers, screen_name=user_handle).items(2):
+    for follower in tweepy.Cursor(api.get_followers, screen_name=user_handle).items(5):
         try:
             followers = str(follower.screen_name)
             followers_list.append(followers)
@@ -79,20 +79,25 @@ def ingest():
     # get list of followers names
     keyword = str(keyword)
 
+    # make an API call to search_tweets. loop through list of followers and pass in search
+    # terms from keyword user input and return list of users corresponding with that search query
     for follow in followers_list:
 
         search_terms = f"\'{keyword} from:{follow}\'"
-        print(search_terms)
         try:
             searched_tweets = [tweet for tweet in tweepy.Cursor(
                 api.search_tweets, q=search_terms).items(5)]
-            # collects tweet content and corresponding userID
+
             print("tweets added")
-            print(searched_tweets["statuses"]["user"]["screen_name"])
+            for t in searched_tweets:
+                found_sn = t.user.screen_name
+            # return found_sn
+            # print(t.user.screen_name)
+
         except:
             print("Oops, there are not matches with these followers.")
 
-    return render_template("/candidates.html", keyword=keyword, user_handle=user_handle)
+    return render_template("/candidates.html", keyword=keyword, user_handle=user_handle, found_sn=found_sn)
     # what data needs to be returned?
     # we need the user name of our followers, along with the user ID of OH
 
