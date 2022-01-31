@@ -4,7 +4,7 @@
 <body class="homepage-container" id="homepage">
     <link rel="stylesheet" href="/static/css/style.css"/>
 <div id="content" class="container internal">
-    <h1>A little birdy told me...</h1>
+    <h1 class="bird-title">A little birdy told me...</h1>
     <div class="search-form" id="search-form">
         <form action="/ingest" method="GET" id="search-form">
             <label for="twitter-handle">Twitter handle:</label>
@@ -13,13 +13,16 @@
             <label for="keyword"> Keyword parameters: </label>
             <input type="keyword" name="keyword">
         <br>
-        <select name="quantity" id="quantity">
+        <label for="quantity"> How many results?</label>
+        <select class='qty' name="quantity" id="quantity"> 
             <option value="10">10</option>
             <option value="20">20</option>
             <option value="30">30</option>
         </select>
         <br>
-        <button type="submit">Search</button>
+        <br>
+        <br>
+        <button class="submit-btn" type="submit">Search</button>
 
         </form>
     
