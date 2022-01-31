@@ -48,67 +48,86 @@ def ingest():
     """takes user input and makes a post request to get/followers_list api and returns
     matched search results"""
 
-    handle = request.args["handle"]
+    followers_list = []
+
+    user_handle = request.args["handle"]
     quantity = request.args["quantity"]
     keyword = request.args["keyword"]
 
     # adds user to the User table in database
-    add_user = crud.add_user(handle)
-    print("user added")
+    add_user = crud.add_user(user_handle=user_handle)
+    # <User user_id=7 handle=marvin_roque>
 
     # using the user handle, search for followers by api and adds followers to users table
-    for follower in tweepy.Cursor(api.get_followers, screen_name=handle).items(2):
+    for follower in tweepy.Cursor(api.get_followers, screen_name=user_handle).items(2):
         try:
-            followers = follower.screen_name
+            followers = str(follower.screen_name)
+            followers_list.append(followers)
             # add each follower of the original handle (OH) to the database
             added_user = crud.add_user(user_handle=followers)
-            # grabs id of the handle we're querying
+            # grabs id of the followers' handles
             user_id = crud.get_userid(user_handle=followers)
 
         except:
             print("Oops! That handle doesn't work. Please try again.")
     # assign follow id as OH's user ID
-    following_id = crud.get_userid(user_handle=handle)
+    following_id = crud.get_userid(user_handle=user_handle)
     # # add each of those users(followers) as a follower to the Follower table
     added_follower = crud.add_user_as_follower(
         user_id=user_id, following_id=following_id)
 
-    return render_template("/candidates.html", keyword=keyword, handle=handle)
+    # get list of followers names
+    keyword = str(keyword)
+
+    for follow in followers_list:
+
+        search_terms = f"\'{keyword} from:{follow}\'"
+        print(search_terms)
+        try:
+            searched_tweets = [tweet for tweet in tweepy.Cursor(
+                api.search_tweets, q=search_terms).items(5)]
+            # collects tweet content and corresponding userID
+            print("tweets added")
+            print(searched_tweets["statuses"]["user"]["screen_name"])
+        except:
+            print("Oops, there are not matches with these followers.")
+
+    return render_template("/candidates.html", keyword=keyword, user_handle=user_handle)
     # what data needs to be returned?
     # we need the user name of our followers, along with the user ID of OH
 
 
-@app.route("/candidates", methods=["GET", "POST"])
-def get_relevant_candidates(keyword, handle):
+# @app.route("/candidates", methods=["GET", "POST"])
+# def get_relevant_candidates(keyword, user_handle):
 
-    # look up user_id that corresponds with handle
-    user_id = crud.get_userid(user_handle=handle)
-    # look up in followers table with userID, and find following IDs
-    follower_id = crud.get_follower_id(following_id=user_id)
-    # go back to users table and look up corresponding screen names correspoinding with Following
-    screen_name = crud.get_username(user_id=follower_id)
+#     # # look up user_id that corresponds with handle
+#     # user_id = crud.get_userid(user_handle=user_handle)
+#     # # look up in followers table with userID, and find following IDs
+#     # follower_id = crud.get_follower_id(following_id=user_id)
+#     # # go back to users table and look up corresponding screen names correspoinding with Following
+#     # screen_name = crud.get_username(user_id=follower_id)
 
-    print("---------------------------")
-    print(screen_name)
+#     print("---------------------------")
+#     print(user_handle)
 
-    # run API search against all of the following_ids whose user_id = OH's ID
-    # return matching screen names
+#     # run API search against all of the following_ids whose user_id = OH's ID
+#     # return matching screen names
 
-    # grabs the list of followers and passes through user_Timeline API to exract tweets of corresponding users
+#     # grabs the list of followers and passes through user_Timeline API to exract tweets of corresponding users
 
-    # for f in data():
-    #     # terms = data["followers"]
-    #     search_terms = keyword + "from:" + f
-    #     for tweet in tweepy.Cursor(api.search_tweets, q=search_terms).items(5):
-    #         if resp.ok:
-    #             # collects tweet content and corresponding userID
+#     # for f in data():
+#     #     # terms = data["followers"]
+#     #     search_terms = keyword + "from:" + f
+#     #     for tweet in tweepy.Cursor(api.search_tweets, q=search_terms).items(5):
+#     #         if resp.ok:
+#     #             # collects tweet content and corresponding userID
 
-    #             print("tweets added")
-    #             return
-    #         else:
-    #             print("Oops, there are not matches with these followers.")
+#     #             print("tweets added")
+#     #             return
+#     #         else:
+#     #             print("Oops, there are not matches with these followers.")
 
-    return render_template("/candidates.html")
+#     return render_template("/candidates.html", keyword=keyword, user_handle=user_handle)
 
 
 if __name__ == "__main__":

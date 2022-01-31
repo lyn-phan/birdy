@@ -1,4 +1,4 @@
-from flask import Flask
+
 from flask_sqlalchemy import SQLAlchemy
 import server
 
@@ -7,8 +7,7 @@ db = SQLAlchemy()
 
 class User(db.Model):
     """a user/handle"""
-
-    __tablename__ = 'user'
+    __tablename__ = 'users'
 
     user_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     user_handle = db.Column(db.String(30), nullable=False)
@@ -20,13 +19,13 @@ class User(db.Model):
 class Follower(db.Model):
     """this keeps track of the followers of the original handle"""
 
-    __tablename__ = "follower"
+    __tablename__ = "followers"
 
     f_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey(
-        "user.user_id"), nullable=False)
+        "users.user_id"), nullable=False)
     following_id = db.Column(db.Integer, db.ForeignKey(
-        "user.user_id"), nullable=False)
+        "users.user_id"), nullable=False)
 
     user = db.relationship("User", backref="follower",
                            foreign_keys=[user_id])

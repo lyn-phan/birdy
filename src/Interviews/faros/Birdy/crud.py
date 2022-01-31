@@ -50,6 +50,13 @@ def get_userid(user_handle):
     return user_id
 
 
+# def get_all_followers(following_id):
+#     """Get all followers of the OH"""
+
+#     get_followers = Follower.query.filter_by(following_id=following_id).all()
+#     follower_names = get_followers.
+
+
 if __name__ == '__main__':
     from server import app
     connect_to_db(app)
